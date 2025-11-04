@@ -31,11 +31,15 @@ jobs:
           branch: gh-pages # branch to deploy to
           folder: public  # folder to publish
           clean: true
-          token: ${{ secrets.GITHUB_TOKEN }}
+          # Prefer a user PAT stored in GH_PAGES_PAT (useful when org/policy blocks GITHUB_TOKEN),
+          # otherwise fall back to the default GITHUB_TOKEN.
+          token: ${{ secrets.GH_PAGES_PAT || secrets.GITHUB_TOKEN }}
 
       - name: Configure GitHub Pages site (auto)
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Prefer a user PAT if provided; else use the workflow token. A PAT may be required in
+          # organizations where the GITHUB_TOKEN has limited privileges for Pages API.
+          GITHUB_TOKEN: ${{ secrets.GH_PAGES_PAT || secrets.GITHUB_TOKEN }}
         run: |
           echo "Configuring GitHub Pages to use branch 'gh-pages'..."
           # Use the REST API to set the Pages source to gh-pages (root)
