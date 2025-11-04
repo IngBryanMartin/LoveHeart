@@ -1,31 +1,26 @@
-name: Deploy to GitHub Pages
+name: Deploy to GitHub Pages (gh-pages)
 
 on:
   push:
     branches: [main]
-    
+
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Prepare artifact directory
+      - name: Prepare public directory
         run: |
           mkdir -p public
-          # Copiamos el HTML (y cualquier archivo estático que quieras publicar)
           cp -r Heart.html public/ || true
 
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v1
+      - name: Deploy to gh-pages
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
-          path: public
-
-      - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v1
+          branch: gh-pages # branch to deploy to
+          folder: public  # folder to publish
+          clean: true
+          token: ${{ secrets.GITHUB_TOKEN }}
